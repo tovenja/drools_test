@@ -1,0 +1,53 @@
+package drools.config;
+
+import com.mi.drools.DroolsTester.User;
+
+
+
+rule "rule01"
+	salience 3
+	when
+		$u:User(money>0);
+	then
+	    System.out.println("剩余"+$u.getMoney()+"元, 花2元购买一瓶啤酒并喝掉");
+	    $u.setEmpty($u.getEmpty()+1);
+	    $u.setCover($u.getCover()+1);
+	    $u.setMoney($u.getMoney()-2);
+	    $u.setTotals($u.getTotals()+1);
+	    update($u);
+end
+
+rule "rule02"
+	salience 2
+	when
+		$u:User($u.getEmpty()>=2);
+		then
+		    System.out.println("剩余"+$u.getEmpty()+"个空瓶, 用2个空瓶兑换一瓶啤酒并喝掉");
+		    $u.setEmpty($u.getEmpty()-1);
+		    $u.setCover($u.getCover()+1);
+		    $u.setTotals($u.getTotals()+1);
+		    update($u);
+end
+
+rule "rule03"
+	salience 1
+	when
+		$u:User($u.getCover()>=4);
+		then
+			System.out.println("剩余"+$u.getCover()+"个瓶盖, 用4个瓶盖兑换一瓶啤酒并喝掉");
+			$u.setEmpty($u.getEmpty()+1);
+			$u.setCover($u.getCover()-3);
+			$u.setTotals($u.getTotals()+1);
+			update($u);
+end
+
+rule "rule04"
+	salience 0
+	when
+		$u:User();
+		then
+			System.out.println("总共可以喝"+$u.getTotals()+"瓶啤酒");
+			System.out.println("剩余"+$u.getEmpty()+"个空瓶");
+			System.out.println("剩余"+$u.getCover()+"个瓶盖");
+end
+
